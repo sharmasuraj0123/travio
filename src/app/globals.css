@@ -8,14 +8,37 @@
   --glass-border: rgba(255, 255, 255, 0.3);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   --glass-blur: blur(20px);
-  --text-primary: rgba(255, 255, 255, 0.98);
-  --text-secondary: rgba(255, 255, 255, 0.9);
-  --text-muted: rgba(255, 255, 255, 0.75);
+  --text-primary: rgba(17, 17, 17, 0.98);
+  --text-secondary: rgba(17, 17, 17, 0.8);
+  --text-muted: rgba(17, 17, 17, 0.6);
   --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --accent-gradient-alt: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   --accent-gradient-blue: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   --accent-gradient-gold: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
 }
+
+/* Landing dark-text overrides (scoped) */
+.landing-dark-text { color: #111 !important; }
+.landing-dark-text * { color: #111; }
+.landing-dark-text .glass,
+.landing-dark-text .glass-weak,
+.landing-dark-text .card-glass,
+.landing-dark-text .btn-glass,
+.landing-dark-text .input-glass { color: #111 !important; }
+/* Make surfaces more opaque for readability */
+.landing-dark-text .glass-weak { background: rgba(255, 255, 255, 0.9) !important; border-color: rgba(0,0,0,0.08) !important; }
+.landing-dark-text .glass-strong { background: rgba(255, 255, 255, 0.98) !important; border: 1px solid rgba(0,0,0,0.1) !important; color: #111 !important; box-shadow: 0 12px 30px rgba(0,0,0,0.08) !important; }
+.landing-dark-text .glass { background: rgba(255, 255, 255, 0.85) !important; border-color: rgba(0,0,0,0.08) !important; }
+.landing-dark-text .card-glass { background: rgba(255, 255, 255, 0.85) !important; border-color: rgba(0,0,0,0.08) !important; }
+.landing-dark-text .btn-glass { background: rgba(255,255,255,0.95) !important; border-color: rgba(0,0,0,0.08) !important; }
+.landing-dark-text .btn-glass:hover { background: rgba(255,255,255,1) !important; }
+.landing-dark-text .input-glass { background: rgba(255,255,255,0.95) !important; border-color: rgba(0,0,0,0.1) !important; }
+.landing-dark-text .input-glass::placeholder { color: rgba(0,0,0,0.5) !important; }
+/* Suggestion item helper */
+.landing-dark-text .suggestion-btn { background: rgba(255,255,255,0.95) !important; border-color: rgba(0,0,0,0.08) !important; color: #111 !important; }
+.landing-dark-text .suggestion-btn:hover { background: rgba(255,255,255,1) !important; }
+/* Alignment helpers */
+.landing-dark-text .align-block { padding: 12px 12px !important; border-radius: 12px !important; }
 
 /* Global Styles */
 * {
@@ -36,7 +59,7 @@ body {
 }
 
 body {
-  background: var(--accent-gradient);
+  background: #ffffff;
   min-height: 100vh;
   position: relative;
 }
@@ -49,11 +72,8 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.4) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.4) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.4) 0%, transparent 50%);
-  animation: backgroundShift 20s ease-in-out infinite;
+  background: none;
+  animation: none;
   z-index: -1;
 }
 

@@ -117,6 +117,8 @@ export default function Home() {
 
   const handleCitySelect = (cityName: string) => {
     setSelectedCity(cityName)
+    // Ensure chat opens when a city is picked so options show up
+    setIsChatActive(true)
     // Zoom to the selected city
     if (mapRef.current?.zoomToCity) {
       mapRef.current.zoomToCity(cityName)
@@ -124,6 +126,9 @@ export default function Home() {
   }
 
   const handleZoomToCity = (cityName: string) => {
+    // Persist selected city and open chat to show options
+    setSelectedCity(cityName)
+    setIsChatActive(true)
     if (mapRef.current?.zoomToCity) {
       mapRef.current.zoomToCity(cityName)
     }

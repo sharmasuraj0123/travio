@@ -25,6 +25,17 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Options shown after selecting a city
+  const [cityOptions, setCityOptions] = useState<string[]>([])
+  const [showCityOptions, setShowCityOptions] = useState(false)
+
+  // New: example suggestions shown in the landing search UI
+  const exampleCities = [
+    'New York, United States',
+    'Los Angeles, California, United States',
+    'Austin, Texas, United States'
+  ]
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -57,6 +68,20 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
 
   // Update messages when selectedCity changes
   useEffect(() => {
+    if (selectedCity) {
+      // Prepare 5 suggested prompts for the selected city
+      const city = selectedCity.split(',')[0]
+      const options = [
+        `Most iconic places to visit in ${city}`,
+        `Cool things to do over a weekend in ${city}`,
+        `Best local foods and where to try them in ${city}`,
+        `Hidden gems only locals know in ${city}`,
+        `Budget-friendly itinerary for 2 days in ${city}`
+      ]
+      setCityOptions(options)
+      setShowCityOptions(true)
+    }
+
     if (selectedCity && messages.length > 0) {
       let messageText = ''
       
@@ -83,6 +108,9 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
     if (messages.length === 0) {
       onChatStart()
     }
+
+    // Hide city options once a prompt is chosen/sent
+    if (showCityOptions) setShowCityOptions(false)
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -158,133 +186,118 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
   // Landing page chat box
   if (!isActive) {
     return (
-      <div className="card-glass fade-in" style={{
+      <div className="card-glass fade-in landing-dark-text" style={{
         position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '500px',
-        maxWidth: '90vw',
-        height: '400px',
+        width: '700px',
+        maxWidth: '95vw',
+        height: '360px',
         display: 'flex',
         flexDirection: 'column',
-        zIndex: 1000,
-        color: 'var(--text-primary)'
+        zIndex: 1000
       }}>
-        {/* Header */}
-        <div style={{
-          padding: '24px',
+        {/* Top bar - "Where to?" and Next button */}
+        <div className="align-block" style={{
           borderBottom: '1px solid var(--glass-border)',
-          textAlign: 'center'
-        }}>
-        </div>
-
-        {/* Welcome Message */}
-        <div style={{
-          flex: 1,
-          padding: '24px',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
           alignItems: 'center',
-          textAlign: 'center'
+          justifyContent: 'space-between',
+          background: 'rgba(255,255,255,0.5)'
         }}>
-                    <div className="bounce-in" style={{ 
-            fontSize: '5rem', 
-            marginBottom: '24px',
-            filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.4))',
-            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
-          }}>
-            
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{
+              width: 24,
+              height: 24,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg,#4facfe 0%, #00f2fe 100%)',
+              boxShadow: '0 0 10px rgba(79,172,254,0.6)'
+            }} />
+            <span style={{
+              fontWeight: 700,
+              color: '#0f766e'
+            }}>Where to?</span>
           </div>
-          <h3 className="text-gradient-gold" style={{ 
-            fontSize: '2rem', 
-            margin: '0 0 20px 0',
-            fontWeight: '700',
-            textShadow: '0 6px 12px rgba(0,0,0,0.5)',
-            letterSpacing: '0.025em'
-          }}>
-            Welcome to Travio
-          </h3>
-          <p style={{ 
-            fontSize: '1.1rem', 
-            color: 'var(--text-primary)', 
-            margin: '0 0 36px 0', 
-            lineHeight: '1.7',
-            maxWidth: '420px',
-            fontWeight: 500,
-            textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-            letterSpacing: '0.01em'
-          }}>
-            Click on any city on the globe to start a conversation about it! 
-            Or type a message to begin exploring the world together.
-          </p>
-          
-          {/* Quick Start Buttons */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '8px', 
-            flexWrap: 'wrap', 
-            justifyContent: 'center',
-            maxWidth: '450px'
-          }}>
-            {[
-              "Tell me about Paris",
-              "What's special about Tokyo?",
-              "Show me Mount Everest",
-              "Travel tips for New York"
-            ].map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setInputValue(suggestion)
-                  setTimeout(() => handleSendMessage(), 100)
-                }}
-                className="btn-glass"
-                style={{
-                  fontSize: '0.8rem',
-                  padding: '10px 16px',
-                  borderRadius: '24px',
-                  whiteSpace: 'nowrap',
-                  fontWeight: 600,
-                  letterSpacing: '0.01em'
-                }}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
+          <button
+            onClick={handleSendMessage}
+            disabled={!inputValue.trim()}
+            className="btn-glass"
+            style={{ padding: '8px 14px', opacity: inputValue.trim() ? 1 : 0.6, cursor: inputValue.trim() ? 'pointer' : 'not-allowed' }}
+            title="Next"
+          >
+            Next
+          </button>
         </div>
 
-        {/* Input */}
-        <div style={{
-          padding: '24px',
-          borderTop: '1px solid var(--glass-border)'
-        }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
+        {/* Search input and suggestions */}
+        <div style={{ flex: 1, padding: '12px 12px 0 12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* Input row */}
+          <div className="glass-weak align-block" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span style={{ opacity: 0.6 }}>▸</span>
             <input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type your message to start exploring..."
+              placeholder="Search cities or ask a question..."
               className="input-glass"
-              style={{ flex: 1 }}
+              style={{ flex: 1, background: 'transparent', border: 'none', boxShadow: 'none' }}
             />
+            <span style={{ opacity: 0.6 }}>▸</span>
+          </div>
+
+          {/* Suggestions list */}
+          <div className="glass-weak align-block" style={{
+            flex: 1,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div style={{
+              fontSize: '0.75rem',
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: 'rgba(0,0,0,0.7)',
+              marginBottom: 8
+            }}>Example Cities</div>
+
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {exampleCities.map((label, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setInputValue(label)
+                    setTimeout(() => handleSendMessage(), 50)
+                  }}
+                  className="btn-glass suggestion-btn"
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    justifyContent: 'space-between',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '12px',
+                    marginBottom: 8
+                  }}
+                >
+                  <span style={{ fontSize: '1rem', fontWeight: 700 }}>{label}</span>
+                  <span style={{ opacity: 0.75 }}>↗</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Controls row (pause/reset) */}
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', padding: '0 12px 12px 12px' }}>
             {onToggleSpin && (
               <button
                 onClick={onToggleSpin}
                 className="btn-glass"
-                style={{
-                  padding: '12px',
-                  fontSize: '1rem',
-                  minWidth: '44px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
+                style={{ padding: '10px', minWidth: 40 }}
                 title={spinEnabled ? 'Pause rotation' : 'Resume rotation'}
               >
                 {spinEnabled ? '⏸' : '▶'}
@@ -294,31 +307,12 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
               <button
                 onClick={onResetView}
                 className="btn-glass"
-                style={{
-                  padding: '12px',
-                  fontSize: '1rem',
-                  minWidth: '44px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
+                style={{ padding: '10px', minWidth: 40 }}
                 title="Reset view"
               >
                 🔄
               </button>
             )}
-            <button
-              onClick={handleSendMessage}
-              disabled={!inputValue.trim()}
-              className="btn-glass"
-              style={{
-                opacity: inputValue.trim() ? 1 : 0.5,
-                cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
-                padding: '12px 16px'
-              }}
-            >
-              Send
-            </button>
           </div>
         </div>
       </div>
@@ -327,7 +321,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
 
   // Active chat layout (left side)
   return (
-    <div className="card-glass slide-in-left" style={{
+    <div className="card-glass slide-in-left landing-dark-text" style={{
       position: 'fixed',
       top: 0,
       left: 0,
@@ -336,7 +330,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
       display: 'flex',
       flexDirection: 'column',
       zIndex: 1000,
-      color: 'var(--text-primary)'
+      background: 'rgba(255,255,255,0.9)'
     }}>
       {/* Header */}
       <div style={{
@@ -352,10 +346,11 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
         }}>
         </div>
         <div>
-          <h3 className="text-gradient" style={{ 
+          <h3 style={{ 
             fontSize: '1.125rem', 
             fontWeight: 'bold', 
-            margin: 0 
+            margin: 0, 
+            color: '#111' 
           }}>
             Travio Assistant
           </h3>
@@ -378,6 +373,36 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
         flexDirection: 'column',
         gap: '16px'
       }}>
+        {/* City suggestion options (dropdown-like) */}
+        {showCityOptions && cityOptions.length > 0 && (
+          <div className="glass-weak align-block" style={{ padding: '12px' }}>
+            <div style={{
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              marginBottom: 8
+            }}>
+              Choose a topic about {selectedCity?.split(',')[0]}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {cityOptions.map((opt, i) => (
+                <button
+                  key={i}
+                  className="btn-glass suggestion-btn"
+                  style={{ textAlign: 'left', justifyContent: 'space-between', display: 'flex', alignItems: 'center', padding: '10px 12px' }}
+                  onClick={() => {
+                    setInputValue(opt)
+                    setShowCityOptions(false)
+                    setTimeout(() => handleSendMessage(), 10)
+                  }}
+                >
+                  <span>{opt}</span>
+                  <span>↗</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {messages.map((message, index) => (
           <div
             key={message.id}

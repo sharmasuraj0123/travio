@@ -95,6 +95,7 @@ const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySel
   const secondsPerRevolution = 240 // Complete a revolution every 4 minutes
   const maxSpinZoom = 5 // Above zoom level 5, do not rotate
   const slowSpinZoom = 3 // Rotate at intermediate speeds between zoom levels 3 and 5
+  const INITIAL_ZOOM = 2 // Increased default zoom level
 
   // Expose resetView and zoomToCity functions to parent component
   useImperativeHandle(ref, () => ({
@@ -102,7 +103,7 @@ const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySel
       if (map.current) {
         map.current.flyTo({
           center: [30, 15],
-          zoom: 1,
+          zoom: INITIAL_ZOOM,
           duration: 2000,
           easing: (t) => t
         })
@@ -133,7 +134,7 @@ const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySel
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12', // Changed to streets for black and white appearance
       projection: 'globe', // Display the map as a globe
-      zoom: 1,
+      zoom: INITIAL_ZOOM,
       center: [30, 15]
     })
 
@@ -369,63 +370,18 @@ const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySel
       
       {/* Enhanced Header with Branding */}
       <div className="card-glass fade-in" style={headerStyle}>
-        <h1 className="text-gradient" style={{ 
+        <h1 className="text-gradient" onClick={() => window.location.reload()} style={{ 
           fontSize: '3rem', 
           fontWeight: '800', 
           marginBottom: '16px',
           textShadow: '0 6px 12px rgba(0,0,0,0.6)',
-          letterSpacing: '0.02em'
-        }}>
+          letterSpacing: '0.02em',
+          cursor: 'pointer'
+        }} title="Refresh">
           Travio
         </h1>
-        <p style={{ 
-          fontSize: '1.4rem', 
-          color: 'var(--text-primary)', 
-          fontWeight: 600, 
-          margin: '0 0 12px 0',
-          textShadow: '0 3px 6px rgba(0,0,0,0.4)',
-          letterSpacing: '0.01em'
-        }}>
-          Explore the world
-        </p>
-        <p style={{ 
-          fontSize: '1.1rem', 
-          color: 'var(--text-secondary)', 
-          margin: 0,
-          textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-          fontWeight: 500
-        }}>
-          Click on highlighted cities to start chatting!
-        </p>
       </div>
 
-      {/* Instructions */}
-      <div className="card-glass fade-in" style={bottomRightStyle}>
-        <p style={{ 
-          fontSize: '1.1rem', 
-          fontWeight: 700, 
-          margin: '0 0 14px 0', 
-          color: 'var(--text-primary)',
-          textShadow: '0 3px 6px rgba(0,0,0,0.4)',
-          letterSpacing: '0.01em'
-        }}>
-          💡 How to use:
-        </p>
-        <ul style={{ 
-          fontSize: '0.95rem', 
-          color: 'var(--text-secondary)', 
-          margin: 0, 
-          paddingLeft: '18px', 
-          lineHeight: '1.6',
-          textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-          fontWeight: 500
-        }}>
-          <li>Click on highlighted cities to zoom in</li>
-          <li>Drag to rotate the globe</li>
-          <li>Use controls to pause/reset</li>
-          <li>The globe auto-spins when idle</li>
-        </ul>
-      </div>
 
 
     </div>
