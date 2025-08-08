@@ -32,11 +32,16 @@ const Map = dynamic(() => import('@/components/Map'), {
   )
 })
 
+type MapHandle = {
+  resetView: () => void
+  zoomToCity: (cityName: string) => void
+}
+
 export default function Home() {
   const [isChatActive, setIsChatActive] = useState(false)
   const [selectedCity, setSelectedCity] = useState<string>('')
   const [spinEnabled, setSpinEnabled] = useState(true)
-  const mapRef = useRef<any>(null)
+  const mapRef = useRef<MapHandle | null>(null)
   
   // Get Mapbox access token from environment variable
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN

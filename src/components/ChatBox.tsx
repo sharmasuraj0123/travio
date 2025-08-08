@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface Message {
   id: string
@@ -420,11 +422,19 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
                 padding: '12px 16px',
                 borderRadius: '16px',
                 fontSize: '0.875rem',
-                lineHeight: '1.5',
+                lineHeight: '1.6',
                 wordWrap: 'break-word'
               }}
             >
-              {message.text}
+              {message.sender === 'bot' ? (
+                <div className="markdown-body">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {message.text}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                message.text
+              )}
             </div>
           </div>
         ))}

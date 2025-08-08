@@ -179,7 +179,7 @@ export default function Search() {
 
             {!isSearching && results.length === 0 && searchQuery && (
               <div className="text-center py-8 text-gray-500">
-                No results found for "{searchQuery}"
+                No results found for &quot;{searchQuery}&quot;
               </div>
             )}
 
