@@ -386,9 +386,12 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
               alt="Travio"
               width={200}
               height={100}
+              onClick={() => window.location.reload()}
               style={{ 
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+                cursor: 'pointer'
               }}
+              title="Refresh"
               priority
             />
             Assistant

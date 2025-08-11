@@ -370,27 +370,29 @@ const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySel
       <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
       
       {/* Enhanced Header with Branding */}
-      <div style={{
-        position: 'absolute',
-        top: '20px',
-        left: '20px',
-        zIndex: 10,
-        padding: '8px'
-      }}>
-        <Image 
-          src="/travio.png"
-          alt="Travio"
-          width={240}
-          height={80}
-          onClick={() => window.location.reload()}
-          style={{ 
-            cursor: 'pointer',
-            filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.6))'
-          }}
-          title="Refresh"
-          priority
-        />
-      </div>
+      {!isChatActive && (
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          zIndex: 10,
+          padding: '8px'
+        }}>
+          <Image 
+            src="/travio.png"
+            alt="Travio"
+            width={240}
+            height={80}
+            onClick={() => window.location.reload()}
+            style={{ 
+              cursor: 'pointer',
+              filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.6))'
+            }}
+            title="Refresh"
+            priority
+          />
+        </div>
+      )}
 
 
 
