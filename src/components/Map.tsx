@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import Image from 'next/image'
 
 interface MapProps {
   accessToken: string
@@ -369,17 +370,26 @@ const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySel
       <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
       
       {/* Enhanced Header with Branding */}
-      <div className="card-glass fade-in" style={headerStyle}>
-        <h1 className="text-gradient" onClick={() => window.location.reload()} style={{ 
-          fontSize: '3rem', 
-          fontWeight: '800', 
-          marginBottom: '16px',
-          textShadow: '0 6px 12px rgba(0,0,0,0.6)',
-          letterSpacing: '0.02em',
-          cursor: 'pointer'
-        }} title="Refresh">
-          Travio
-        </h1>
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        left: '20px',
+        zIndex: 10,
+        padding: '8px'
+      }}>
+        <Image 
+          src="/travio.png"
+          alt="Travio"
+          width={240}
+          height={80}
+          onClick={() => window.location.reload()}
+          style={{ 
+            cursor: 'pointer',
+            filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.6))'
+          }}
+          title="Refresh"
+          priority
+        />
       </div>
 
 

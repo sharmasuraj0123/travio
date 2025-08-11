@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import Image from 'next/image'
 
 interface Message {
   id: string
@@ -32,7 +33,10 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
   const exampleCities = [
     'New York, United States',
     'Mumbai, India',
-    'Houston, United States'
+    'Paris, France',
+    'London, United Kingdom',
+    'Rome, Italy',
+
   ]
 
   const scrollToBottom = () => {
@@ -55,13 +59,60 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       'Cairo', 'Lagos', 'Cape Town', 'Nairobi', 'Victoria', 'Tunis', 'Casablanca',
       'Sydney', 'Melbourne', 'Perth', 'Auckland', 'Noumea'
     ]
+
+    // Helper to escape regex and create a Unicode-aware boundary regex for city names
+    const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const makeCityRegex = (city: string) => {
+      const spaced = escapeRegExp(city).replace(/\s+/g, '\\s+')
+      // Avoid substring matches by requiring non-letter boundaries around the city name
+      // Uses ASCII letter class for broad compatibility
+      return new RegExp(`(?:^|[^A-Za-z])(${spaced})(?=[^A-Za-z]|$)`, 'i')
+    }
     
-    // Check if any city is mentioned in the text
+    // Common city patterns that might indicate a city mention
+    const cityPatterns = [
+      /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*,\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g, // "City, Country" format
+      /\bin\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g, // "in CityName" format
+      /\bto\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g, // "to CityName" format
+      /\bvisit\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g // "visit CityName" format
+    ]
+    
+    let foundCity: string | null = null
+    let mentionedCity: string | null = null
+    
+    // First check if any supported city is mentioned (use boundary-aware regex)
     for (const city of supportedCities) {
-      if (text.toLowerCase().includes(city.toLowerCase())) {
-        onZoomToCity(city)
+      const regex = makeCityRegex(city)
+      if (regex.test(text)) {
+        foundCity = city
         break
       }
+    }
+    
+    // If no supported city found, check for city-like patterns
+    if (!foundCity) {
+      for (const pattern of cityPatterns) {
+        const matches = [...text.matchAll(pattern)]
+        for (const match of matches) {
+          const potentialCity = (match[1] || match[0]).trim()
+          if (potentialCity && potentialCity.length > 2) {
+            const normalizedPotential = potentialCity.replace(/\s+/g, ' ').toLowerCase()
+            const isSupported = supportedCities.some(city => city.toLowerCase() === normalizedPotential)
+            if (!isSupported) {
+              mentionedCity = potentialCity
+              break
+            }
+          }
+        }
+        if (mentionedCity) break
+      }
+    }
+    
+    if (foundCity) {
+      onZoomToCity(foundCity)
+      console.log('Zooming to city:', foundCity)
+    } else if (mentionedCity) {
+      onZoomToCity(`${mentionedCity} is not supported yet, stay tuned for next update! 🌍`)
     }
   }
 
@@ -325,9 +376,22 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
             fontSize: '1.125rem', 
             fontWeight: 'bold', 
             margin: 0, 
-            color: '#111' 
+            color: '#111',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}>
-            Travio Assistant
+            <Image 
+              src="/travio.png"
+              alt="Travio"
+              width={200}
+              height={100}
+              style={{ 
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
+              }}
+              priority
+            />
+            Assistant
           </h3>
           <p style={{ 
             fontSize: '0.75rem', 

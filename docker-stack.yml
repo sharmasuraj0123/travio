@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  web:
+    image: travio-nextjs:latest
+    # For CI/CD, push to a registry and reference e.g. your-registry/travio-nextjs:gitsha
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 30s
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    ports:
+      - target: 3000
+        published: 8080
+        protocol: tcp
+        mode: ingress
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=${NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+      # - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # - GOOGLE_PLACES_API_KEY=${GOOGLE_PLACES_API_KEY}
+      # - WEATHER_API_KEY=${WEATHER_API_KEY}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    # If you use an overlay network shared with other services
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: overlay 

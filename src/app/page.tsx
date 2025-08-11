@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import ChatBox from '@/components/ChatBox'
+import Image from 'next/image'
 
 // Dynamically import Map component to avoid SSR issues with Mapbox GL JS
 const Map = dynamic(() => import('@/components/Map'), {
@@ -54,19 +55,23 @@ export default function Home() {
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
-                  <div className="card-glass bounce-in" style={{ 
+                  <div style={{ 
                     textAlign: 'center', 
                     maxWidth: '500px', 
                     padding: '32px',
                     color: 'var(--text-primary)'
                   }}>
-                    <h1 className="text-gradient" style={{ 
-                      fontSize: '2.5rem', 
-                      fontWeight: 'bold', 
-                      marginBottom: '20px' 
-                    }}>
-                      Travio
-                    </h1>
+                    <Image 
+                      src="/travio.png"
+                      alt="Travio"
+                      width={100}
+                      height={100}
+                      style={{ 
+                        marginBottom: '20px',
+                        filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+                      }}
+                      priority
+                    />
                     <p style={{ 
                       marginBottom: '24px', 
                       fontSize: '1.125rem',
