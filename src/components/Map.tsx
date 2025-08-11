@@ -8,7 +8,6 @@ interface MapProps {
   accessToken: string
   isChatActive: boolean
   onCitySelect?: (cityName: string) => void
-  spinEnabled?: boolean
   selectedCity?: string
 }
 
@@ -86,9 +85,10 @@ const SUPPORTED_CITIES: Record<string, CityCoordinates> = {
   'Noumea': { lng: 167.8449, lat: -29.0556 }
 }
 
-const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySelect, spinEnabled = true, selectedCity }, ref) => {
+const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySelect, selectedCity }, ref) => {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null)
+  const [spinEnabled, setSpinEnabled] = useState(true)
   const [userInteracting, setUserInteracting] = useState(false)
 
   // Globe spinning configuration

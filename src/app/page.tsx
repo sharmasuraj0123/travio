@@ -40,7 +40,6 @@ type MapHandle = {
 export default function Home() {
   const [isChatActive, setIsChatActive] = useState(false)
   const [selectedCity, setSelectedCity] = useState<string>('')
-  const [spinEnabled, setSpinEnabled] = useState(true)
   const mapRef = useRef<MapHandle | null>(null)
   
   // Get Mapbox access token from environment variable
@@ -139,16 +138,6 @@ export default function Home() {
     }
   }
 
-  const handleToggleSpin = () => {
-    setSpinEnabled(!spinEnabled)
-  }
-
-  const handleResetView = () => {
-    if (mapRef.current?.resetView) {
-      mapRef.current.resetView()
-    }
-  }
-
                 return (
                 <main style={{
                   width: '100vw',
@@ -161,9 +150,6 @@ export default function Home() {
         isActive={isChatActive} 
         onChatStart={handleChatStart}
         selectedCity={selectedCity}
-        onToggleSpin={handleToggleSpin}
-        onResetView={handleResetView}
-        spinEnabled={spinEnabled}
         onZoomToCity={handleZoomToCity}
       />
       
@@ -173,7 +159,6 @@ export default function Home() {
         accessToken={mapboxAccessToken} 
         isChatActive={isChatActive}
         onCitySelect={handleCitySelect}
-        spinEnabled={spinEnabled}
         selectedCity={selectedCity}
       />
     </main>

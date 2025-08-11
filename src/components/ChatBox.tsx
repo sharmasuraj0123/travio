@@ -15,13 +15,10 @@ interface ChatBoxProps {
   isActive: boolean
   onChatStart: () => void
   selectedCity?: string
-  onToggleSpin?: () => void
-  onResetView?: () => void
-  spinEnabled?: boolean
   onZoomToCity?: (cityName: string) => void
 }
 
-export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleSpin, onResetView, spinEnabled, onZoomToCity }: ChatBoxProps) {
+export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToCity }: ChatBoxProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -34,8 +31,8 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
   // New: example suggestions shown in the landing search UI
   const exampleCities = [
     'New York, United States',
-    'Los Angeles, California, United States',
-    'Austin, Texas, United States'
+    'Mumbai, India',
+    'Houston, United States'
   ]
 
   const scrollToBottom = () => {
@@ -291,31 +288,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Controls row (pause/reset) */}
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', padding: '0 12px 12px 12px' }}>
-            {onToggleSpin && (
-              <button
-                onClick={onToggleSpin}
-                className="btn-glass"
-                style={{ padding: '10px', minWidth: 40 }}
-                title={spinEnabled ? 'Pause rotation' : 'Resume rotation'}
-              >
-                {spinEnabled ? '⏸' : '▶'}
-              </button>
-            )}
-            {onResetView && (
-              <button
-                onClick={onResetView}
-                className="btn-glass"
-                style={{ padding: '10px', minWidth: 40 }}
-                title="Reset view"
-              >
-                🔄
-              </button>
-            )}
-          </div>
+                    </div>
         </div>
       </div>
     )
@@ -472,40 +445,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onToggleS
             className="input-glass"
             style={{ flex: 1 }}
           />
-          {onToggleSpin && (
-            <button
-              onClick={onToggleSpin}
-              className="btn-glass"
-              style={{
-                padding: '10px',
-                fontSize: '0.875rem',
-                minWidth: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              title={spinEnabled ? 'Pause rotation' : 'Resume rotation'}
-            >
-              {spinEnabled ? '⏸' : '▶'}
-            </button>
-          )}
-          {onResetView && (
-            <button
-              onClick={onResetView}
-              className="btn-glass"
-              style={{
-                padding: '10px',
-                fontSize: '0.875rem',
-                minWidth: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              title="Reset view"
-            >
-              🔄
-            </button>
-          )}
+          
           <button
             onClick={handleSendMessage}
             disabled={!inputValue.trim()}
