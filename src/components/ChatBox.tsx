@@ -31,12 +31,12 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
 
   // New: example suggestions shown in the landing search UI
   const exampleCities = [
-    'New York, United States',
-    'Mumbai, India',
-    'Paris, France',
-    'London, United Kingdom',
-    'Rome, Italy',
-
+    'Where can I find fried fish in The Bahamas?',
+    'Top 5 Italian restaurants in New York.',
+    'What are popular activities in Mumbai, India?',
+    'Give me a 3-day itinerary in Paris, France.',
+    'What are kid-friendly activities in London?',
+    'What are the cost of museum tickets in Rome, Italy.'
   ]
 
   const scrollToBottom = () => {
@@ -57,7 +57,17 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       'Tokyo', 'Seoul', 'Hong Kong', 'Shanghai', 'Beijing', 'Mumbai', 'New Delhi', 'Kolkata', 'Bangkok', 'Ho Chi Minh City', 'Singapore', 'Jakarta', 'Manila',
       'New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami', 'Toronto', 'Vancouver', 'Mexico City', 'São Paulo', 'Buenos Aires', 'Santiago', 'Lima',
       'Cairo', 'Lagos', 'Cape Town', 'Nairobi', 'Victoria', 'Tunis', 'Casablanca',
-      'Sydney', 'Melbourne', 'Perth', 'Auckland', 'Noumea'
+      'Sydney', 'Melbourne', 'Perth', 'Auckland', 'Noumea',
+
+      // Caribbean (Bahamas, Turks & Caicos, West Indies)
+      // Bahamas
+      'Nassau', 'Freeport', 'George Town (Exuma)', 'Marsh Harbour', 'Alice Town (Bimini)', "Governor's Harbour", 'Dunmore Town', 'Andros Town',
+      // Turks & Caicos
+      'Providenciales', 'Cockburn Town',
+      // West Indies (selected)
+      'Kingston', 'Montego Bay', 'Ocho Rios', 'Port of Spain', 'San Juan', 'Santo Domingo', 'Punta Cana', 'Bridgetown', 'Castries', "St. George's",
+      'Roseau', "St. John's", 'Basseterre', 'Philipsburg', 'Oranjestad', 'Willemstad', 'Kralendijk', 'Road Town', 'Charlotte Amalie', 'Cruz Bay',
+      'Gustavia', 'Pointe-à-Pitre', 'Fort-de-France', 'Kingstown'
     ]
 
     // Helper to escape regex and create a Unicode-aware boundary regex for city names
@@ -236,7 +246,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
   // Landing page chat box
   if (!isActive) {
     return (
-      <div className="card-glass fade-in landing-dark-text" style={{
+      <div className="fade-in" style={{
         position: 'fixed',
         top: '50%',
         left: '50%',
@@ -246,66 +256,71 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         height: '360px',
         display: 'flex',
         flexDirection: 'column',
-        zIndex: 1000
+        zIndex: 1000,
+        background: '#ffffff',
+        border: '1px solid #e5e7eb',
+        borderRadius: '20px',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        color: '#111'
       }}>
-        {/* Top bar - "Where to?" and Next button */}
-        <div className="align-block" style={{
-          borderBottom: '1px solid var(--glass-border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: 'rgba(255,255,255,0.5)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{
-              width: 24,
-              height: 24,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg,#4facfe 0%, #00f2fe 100%)',
-              boxShadow: '0 0 10px rgba(79,172,254,0.6)'
-            }} />
-            <span style={{
-              fontWeight: 700,
-              color: '#0f766e'
-            }}>Where to?</span>
-          </div>
-          <button
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim()}
-            className="btn-glass"
-            style={{ padding: '8px 14px', opacity: inputValue.trim() ? 1 : 0.6, cursor: inputValue.trim() ? 'pointer' : 'not-allowed' }}
-            title="Next"
-          >
-            Next
-          </button>
-        </div>
-
         {/* Search input and suggestions */}
-        <div style={{ flex: 1, padding: '12px 12px 0 12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ flex: 1, padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {/* Input row */}
-          <div className="glass-weak align-block" style={{
+          <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px'
+            gap: '8px',
+            padding: '12px',
+            borderRadius: '12px',
+            background: '#f9fafb',
+            border: '1px solid #e5e7eb'
           }}>
             <span style={{ opacity: 0.6 }}>▸</span>
             <input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Search cities or ask a question..."
-              className="input-glass"
-              style={{ flex: 1, background: 'transparent', border: 'none', boxShadow: 'none' }}
+              placeholder="Plan a trip, discover cities and restaurants, or ask a travel question…"
+              style={{ 
+                flex: 1, 
+                background: 'transparent', 
+                border: 'none', 
+                outline: 'none',
+                fontSize: '0.95rem',
+                color: '#111'
+              }}
             />
-            <span style={{ opacity: 0.6 }}>▸</span>
+            <button
+              onClick={handleSendMessage}
+              disabled={!inputValue.trim()}
+              style={{
+                opacity: inputValue.trim() ? 1 : 0,
+                cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
+                padding: '8px 12px',
+                fontSize: '0.875rem',
+                background: 'transparent',
+                color: 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: '600',
+                transition: 'all 0.2s ease'
+              }}
+              title="Send"
+            >
+              →
+            </button>
           </div>
 
           {/* Suggestions list */}
-          <div className="glass-weak align-block" style={{
+          <div style={{
             flex: 1,
             overflow: 'hidden',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            padding: '12px',
+            borderRadius: '12px',
+            background: '#f9fafb',
+            border: '1px solid #e5e7eb'
           }}>
             <div style={{
               fontSize: '0.75rem',
@@ -313,7 +328,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
               textTransform: 'uppercase',
               color: 'rgba(0,0,0,0.7)',
               marginBottom: 8
-            }}>Example Cities</div>
+            }}>TRY THESE PROMPTS…</div>
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {exampleCities.map((label, idx) => (
@@ -323,7 +338,6 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
                     setInputValue(label)
                     setTimeout(() => handleSendMessage(), 50)
                   }}
-                  className="btn-glass suggestion-btn"
                   style={{
                     width: '100%',
                     textAlign: 'left',
@@ -331,7 +345,21 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
                     display: 'flex',
                     alignItems: 'center',
                     padding: '12px',
-                    marginBottom: 8
+                    marginBottom: 8,
+                    background: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    color: '#111'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#f3f4f6'
+                    e.currentTarget.style.borderColor = '#d1d5db'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#ffffff'
+                    e.currentTarget.style.borderColor = '#e5e7eb'
                   }}
                 >
                   <span style={{ fontSize: '1rem', fontWeight: 700 }}>{label}</span>
@@ -339,7 +367,19 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
                 </button>
               ))}
             </div>
-                    </div>
+          </div>
+        </div>
+        
+        {/* Disclaimer */}
+        <div style={{
+          textAlign: 'center',
+          fontSize: '0.75rem',
+          color: '#ffffff',
+          marginTop: '16px',
+          fontStyle: 'italic',
+          padding: '0 20px'
+        }}>
+          This is a limited preview of the suite of features provided by Travio.
         </div>
       </div>
     )
@@ -347,7 +387,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
 
   // Active chat layout (left side)
   return (
-    <div className="card-glass slide-in-left landing-dark-text" style={{
+    <div className="slide-in-left" style={{
       position: 'fixed',
       top: 0,
       left: 0,
@@ -356,12 +396,14 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       display: 'flex',
       flexDirection: 'column',
       zIndex: 1000,
-      background: 'rgba(255,255,255,0.9)'
+      background: '#ffffff',
+      border: '1px solid #e5e7eb',
+      color: '#111'
     }}>
       {/* Header */}
       <div style={{
         padding: '20px',
-        borderBottom: '1px solid var(--glass-border)',
+        borderBottom: '1px solid #e5e7eb',
         display: 'flex',
         alignItems: 'center',
         gap: '12px'
@@ -398,7 +440,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
           </h3>
           <p style={{ 
             fontSize: '0.75rem', 
-            color: 'var(--text-secondary)', 
+            color: '#6b7280', 
             margin: 0 
           }}>
             {selectedCity ? `Chatting about ${selectedCity}` : 'Ask me about the world'}
@@ -417,7 +459,12 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       }}>
         {/* City suggestion options (dropdown-like) */}
         {showCityOptions && cityOptions.length > 0 && (
-          <div className="glass-weak align-block" style={{ padding: '12px' }}>
+          <div style={{ 
+            padding: '12px',
+            background: '#f9fafb',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px'
+          }}>
             <div style={{
               fontSize: '0.8rem',
               fontWeight: 700,
@@ -429,12 +476,29 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
               {cityOptions.map((opt, i) => (
                 <button
                   key={i}
-                  className="btn-glass suggestion-btn"
-                  style={{ textAlign: 'left', justifyContent: 'space-between', display: 'flex', alignItems: 'center', padding: '10px 12px' }}
+                  style={{ 
+                    textAlign: 'left', 
+                    justifyContent: 'space-between', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    padding: '10px 12px',
+                    background: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    color: '#111'
+                  }}
                   onClick={() => {
                     setInputValue(opt)
                     setShowCityOptions(false)
                     setTimeout(() => handleSendMessage(), 10)
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#f3f4f6'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#ffffff'
                   }}
                 >
                   <span>{opt}</span>
@@ -456,14 +520,16 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
             }}
           >
             <div
-              className={message.sender === 'user' ? 'glass-strong' : 'glass-weak'}
               style={{
                 maxWidth: '80%',
                 padding: '12px 16px',
                 borderRadius: '16px',
                 fontSize: '0.875rem',
                 lineHeight: '1.6',
-                wordWrap: 'break-word'
+                wordWrap: 'break-word',
+                background: message.sender === 'user' ? '#3b82f6' : '#f3f4f6',
+                color: message.sender === 'user' ? '#ffffff' : '#111',
+                border: message.sender === 'user' ? 'none' : '1px solid #e5e7eb'
               }}
             >
               {message.sender === 'bot' ? (
@@ -481,10 +547,12 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         
         {isTyping && (
           <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-            <div className="glass-weak" style={{
+            <div style={{
               padding: '12px 16px',
               borderRadius: '16px',
-              fontSize: '0.875rem'
+              fontSize: '0.875rem',
+              background: '#f3f4f6',
+              border: '1px solid #e5e7eb'
             }}>
               <div className="typing-dots">
                 <div></div>
@@ -501,7 +569,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       {/* Input */}
       <div style={{
         padding: '20px',
-        borderTop: '1px solid var(--glass-border)'
+        borderTop: '1px solid #e5e7eb'
       }}>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
@@ -509,19 +577,40 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={selectedCity ? `Ask about ${selectedCity}...` : "Type your message..."}
-            className="input-glass"
-            style={{ flex: 1 }}
+            style={{ 
+              flex: 1,
+              padding: '12px 16px',
+              border: '1px solid #e5e7eb',
+              borderRadius: '12px',
+              fontSize: '0.95rem',
+              outline: 'none',
+              transition: 'all 0.2s ease',
+              color: '#111'
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = '#3b82f6'
+              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)'
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = '#e5e7eb'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
           />
           
           <button
             onClick={handleSendMessage}
             disabled={!inputValue.trim()}
-            className="btn-glass"
             style={{
               opacity: inputValue.trim() ? 1 : 0.5,
               cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
               fontSize: '0.875rem',
-              padding: '12px 16px'
+              padding: '12px 16px',
+              background: inputValue.trim() ? '#3b82f6' : '#9ca3af',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              transition: 'all 0.2s ease'
             }}
           >
             Send

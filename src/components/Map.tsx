@@ -68,7 +68,7 @@ const SUPPORTED_CITIES: Record<string, CityCoordinates> = {
   'Buenos Aires': { lng: -58.3816, lat: -34.6037 },
   'Santiago': { lng: -70.6483, lat: -33.4489 },
   'Lima': { lng: -77.0428, lat: -12.0464 },
-  
+
   // Africa
   'Cairo': { lng: 31.2357, lat: 30.0444 },
   'Lagos': { lng: 3.3792, lat: 6.5244 },
@@ -83,7 +83,48 @@ const SUPPORTED_CITIES: Record<string, CityCoordinates> = {
   'Melbourne': { lng: 144.9631, lat: -37.8136 },
   'Perth': { lng: 115.8605, lat: -31.9505 },
   'Auckland': { lng: 174.7633, lat: -36.8485 },
-  'Noumea': { lng: 167.8449, lat: -29.0556 }
+  'Noumea': { lng: 167.8449, lat: -29.0556 },
+
+  // Caribbean (Bahamas, Turks & Caicos, West Indies)
+  // Bahamas
+  'Nassau': { lng: -77.3554, lat: 25.0478 },
+  'Freeport': { lng: -78.6956, lat: 26.5333 },
+  'George Town (Exuma)': { lng: -75.7337, lat: 23.5161 },
+  'Marsh Harbour': { lng: -77.0636, lat: 26.5412 },
+  'Alice Town (Bimini)': { lng: -79.2999, lat: 25.7215 },
+  "Governor's Harbour": { lng: -76.3317, lat: 25.1948 },
+  'Dunmore Town': { lng: -76.6299, lat: 25.5025 },
+  'Andros Town': { lng: -77.7960, lat: 24.7036 },
+
+  // Turks & Caicos
+  'Providenciales': { lng: -72.2620, lat: 21.7736 },
+  'Cockburn Town': { lng: -71.1389, lat: 21.4612 },
+
+  // West Indies (selected)
+  'Kingston': { lng: -76.7920, lat: 17.9712 },
+  'Montego Bay': { lng: -77.9120, lat: 18.4762 },
+  'Ocho Rios': { lng: -77.1031, lat: 18.4075 },
+  'Port of Spain': { lng: -61.5189, lat: 10.6667 },
+  'San Juan': { lng: -66.1057, lat: 18.4655 },
+  'Santo Domingo': { lng: -69.9312, lat: 18.4861 },
+  'Punta Cana': { lng: -68.4055, lat: 18.5601 },
+  'Bridgetown': { lng: -59.6145, lat: 13.0975 },
+  'Castries': { lng: -60.9875, lat: 14.0101 },
+  "St. George's": { lng: -61.7486, lat: 12.0561 },
+  'Roseau': { lng: -61.3881, lat: 15.3010 },
+  "St. John's": { lng: -61.8468, lat: 17.1274 },
+  'Basseterre': { lng: -62.7287, lat: 17.3026 },
+  'Philipsburg': { lng: -63.0501, lat: 18.0260 },
+  'Oranjestad': { lng: -70.0270, lat: 12.5246 },
+  'Willemstad': { lng: -68.9470, lat: 12.1224 },
+  'Kralendijk': { lng: -68.2760, lat: 12.1444 },
+  'Road Town': { lng: -64.6201, lat: 18.4286 },
+  'Charlotte Amalie': { lng: -64.9311, lat: 18.3419 },
+  'Cruz Bay': { lng: -64.7930, lat: 18.3310 },
+  'Gustavia': { lng: -62.8498, lat: 17.8962 },
+  'Pointe-à-Pitre': { lng: -61.5353, lat: 16.2422 },
+  'Fort-de-France': { lng: -61.0588, lat: 14.6161 },
+  'Kingstown': { lng: -61.2270, lat: 13.1600 }
 }
 
 const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySelect, selectedCity }, ref) => {
