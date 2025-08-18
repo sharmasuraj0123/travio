@@ -380,12 +380,13 @@ const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySel
         width: '50vw',
         height: '100vh',
         zIndex: 1
-      }
-    : { 
+      }      
+      : { 
         position: 'relative' as const,
         width: '100%',
-        height: '100%'
+        height: '100%',
       }
+      // This is the style for the map when the chat is active.
 
   // Inline styles for branding elements
   const headerStyle = {

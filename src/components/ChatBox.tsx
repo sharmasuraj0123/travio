@@ -373,8 +373,8 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         {/* Disclaimer */}
         <div style={{
           textAlign: 'center',
-          fontSize: '0.75rem',
-          color: '#ffffff',
+          fontSize: '0.85rem',
+          color: '#000000',
           marginTop: '16px',
           fontStyle: 'italic',
           padding: '0 20px'
