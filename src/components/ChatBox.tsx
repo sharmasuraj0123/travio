@@ -373,13 +373,22 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         {/* Disclaimer */}
         <div style={{
           textAlign: 'center',
-          fontSize: '0.85rem',
-          color: '#000000',
           marginTop: '16px',
-          fontStyle: 'italic',
           padding: '0 20px'
         }}>
-          This is a limited preview of the suite of features provided by Travio.
+          <div style={{
+            display: 'inline-block',
+            fontSize: '0.85rem',
+            color: '#374151',
+            fontStyle: 'italic',
+            padding: '8px 16px',
+            background: '#f3f4f6',
+            border: '1px solid #e5e7eb',
+            borderRadius: '20px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          }}>
+            This is a limited preview of the suite of features provided by Travio.
+          </div>
         </div>
       </div>
     )
@@ -426,7 +435,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
             <Image 
               src="/travio.png"
               alt="Travio"
-              width={200}
+              width={100}
               height={100}
               onClick={() => window.location.reload()}
               style={{ 
@@ -436,7 +445,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
               title="Refresh"
               priority
             />
-            Assistant
+            Travio Assistant
           </h3>
           <p style={{ 
             fontSize: '0.75rem', 
