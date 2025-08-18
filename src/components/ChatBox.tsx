@@ -445,7 +445,6 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
               title="Refresh"
               priority
             />
-            Travio Assistant
           </h3>
           <p style={{ 
             fontSize: '0.75rem', 
