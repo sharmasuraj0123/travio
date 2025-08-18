@@ -423,8 +423,8 @@ const Map = forwardRef<MapRef, MapProps>(({ accessToken, isChatActive, onCitySel
           <Image 
             src="/travio.png"
             alt="Travio"
-            width={240}
-            height={80}
+            width={200}
+            height={100}
             onClick={() => window.location.reload()}
             style={{ 
               cursor: 'pointer',

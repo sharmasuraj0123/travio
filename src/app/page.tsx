@@ -64,13 +64,9 @@ export default function Home() {
                     <Image 
                       src="/travio.png"
                       alt="Travio"
-                      width={100}
+                      width={200}
                       height={100}
-                      style={{ 
-                        marginBottom: '20px',
-                        filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
-                      }}
-                      priority
+                    
                     />
                     <p style={{ 
                       marginBottom: '24px', 
