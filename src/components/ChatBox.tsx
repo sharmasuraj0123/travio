@@ -4,6 +4,16 @@ import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Image from 'next/image'
+import { 
+  HiOutlineGlobeAlt,
+  HiOutlineCalendarDays,
+  HiOutlineDocumentText,
+  HiOutlinePaperAirplane,
+  HiOutlineHomeModern,
+  HiOutlineClipboardDocumentList,
+  HiOutlineSparkles
+} from 'react-icons/hi2'
+import { PiChefHatLight } from 'react-icons/pi'
 
 interface Message {
   id: string
@@ -28,6 +38,22 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
   // Options shown after selecting a city
   const [cityOptions, setCityOptions] = useState<string[]>([])
   const [showCityOptions, setShowCityOptions] = useState(false)
+
+  // Search sections state
+  const [showSearchSections, setShowSearchSections] = useState(false)
+  const [activeSection, setActiveSection] = useState('general')
+
+  // Search sections configuration
+  const searchSections = [
+    { id: 'general', label: 'General', icon: HiOutlineGlobeAlt },
+    { id: 'best-time', label: 'Best Time to Visit', icon: HiOutlineCalendarDays },
+    { id: 'visa', label: 'Visa', icon: HiOutlineDocumentText },
+    { id: 'flights', label: 'Flights', icon: HiOutlinePaperAirplane },
+    { id: 'hotels', label: 'Hotels', icon: HiOutlineHomeModern },
+    { id: 'itinerary', label: 'Itinerary', icon: HiOutlineClipboardDocumentList },
+    { id: 'restaurants', label: 'Restaurants', icon: PiChefHatLight },
+    { id: 'activities', label: 'Experiences', icon: HiOutlineSparkles }
+  ]
 
   // New: example suggestions shown in the landing search UI
   const exampleCities = [
@@ -169,6 +195,11 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       onChatStart()
     }
 
+    // Show search sections after first message
+    if (!showSearchSections) {
+      setShowSearchSections(true)
+    }
+
     // Hide city options once a prompt is chosen/sent
     if (showCityOptions) setShowCityOptions(false)
 
@@ -190,6 +221,17 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         content: msg.text
       }))
 
+      // Add section context if not general
+      if (activeSection !== 'general') {
+        const sectionContext = getSectionContext(activeSection, selectedCity)
+        if (sectionContext) {
+          apiMessages.push({
+            role: 'system',
+            content: sectionContext
+          })
+        }
+      }
+
       // Add current user message
       apiMessages.push({
         role: 'user',
@@ -203,7 +245,8 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         },
         body: JSON.stringify({
           messages: apiMessages,
-          selectedCity
+          selectedCity,
+          activeSection
         }),
       })
 
@@ -233,6 +276,29 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsTyping(false)
+    }
+  }
+
+  // Get section-specific context for the API call
+  const getSectionContext = (sectionId: string, cityName?: string) => {
+    const city = cityName || selectedCity || 'your destination'
+    switch (sectionId) {
+      case 'best-time':
+        return `Focus on the best time to visit ${city}, including weather patterns, seasons, peak/off-peak periods, and special events or festivals.`
+      case 'visa':
+        return `Provide visa and travel document requirements for ${city}, including application processes, fees, processing times, and entry requirements.`
+      case 'flights':
+        return `Help with flight information for ${city}, including major airlines, airports, booking tips, and transportation to/from airports.`
+      case 'hotels':
+        return `Recommend accommodations in ${city}, including hotels, hostels, vacation rentals, booking platforms, and neighborhood guides.`
+      case 'itinerary':
+        return `Create detailed itineraries for ${city}, including day-by-day plans, must-see attractions, time management, and activity suggestions.`
+      case 'restaurants':
+        return `Recommend restaurants and food experiences in ${city}, including local cuisine, dining etiquette, popular dishes, and where to find them.`
+      case 'activities':
+        return `Suggest places to visit and activities in ${city}, including attractions, tours, outdoor activities, cultural experiences, and hidden gems.`
+      default:
+        return ''
     }
   }
 
@@ -336,6 +402,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
                   key={idx}
                   onClick={() => {
                     setInputValue(label)
+                    setShowSearchSections(true)
                     setTimeout(() => handleSendMessage(), 50)
                   }}
                   style={{
@@ -456,6 +523,67 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         </div>
       </div>
 
+      {/* Search Sections */}
+      {showSearchSections && (
+        <div style={{
+          borderBottom: '1px solid #e5e7eb',
+          padding: '0 20px',
+          background: '#f9fafb'
+        }}>
+          <div 
+            className="hide-scrollbar"
+            style={{
+              display: 'flex',
+              overflowX: 'auto',
+              gap: '0',
+              paddingBottom: '0',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}>
+            {searchSections.map((section) => {
+              const IconComponent = section.icon
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  style={{
+                    padding: '12px 20px',
+                    border: 'none',
+                    background: 'transparent',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: activeSection === section.id ? '#3b82f6' : '#6b7280',
+                    cursor: 'pointer',
+                    borderBottom: activeSection === section.id ? '2px solid #3b82f6' : '2px solid transparent',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    whiteSpace: 'nowrap',
+                    minWidth: 'fit-content'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeSection !== section.id) {
+                      e.currentTarget.style.color = '#374151'
+                      e.currentTarget.style.background = '#f3f4f6'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeSection !== section.id) {
+                      e.currentTarget.style.color = '#6b7280'
+                      e.currentTarget.style.background = 'transparent'
+                    }
+                  }}
+                >
+                  <IconComponent size={18} />
+                  <span>{section.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Messages */}
       <div style={{
         flex: 1,
@@ -500,6 +628,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
                   onClick={() => {
                     setInputValue(opt)
                     setShowCityOptions(false)
+                    setShowSearchSections(true)
                     setTimeout(() => handleSendMessage(), 10)
                   }}
                   onMouseEnter={(e) => {

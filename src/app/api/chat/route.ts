@@ -6,44 +6,43 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { messages, selectedCity } = await req.json()
+    const { messages, selectedCity, activeSection } = await req.json()
+
+    // Get section-specific context
+    const getSectionInstructions = (section: string, city?: string) => {
+      const destination = city || 'the destination'
+      switch (section) {
+        case 'best-time':
+          return `Focus specifically on timing information for visiting ${destination}. Include weather patterns, seasons, peak/off-peak periods, festivals, and events. Always mention specific months and what to expect.`
+        case 'visa':
+          return `Provide comprehensive visa and travel document information for ${destination}. Include application processes, requirements, fees, processing times, and entry restrictions. Be specific about different passport types if relevant.`
+        case 'flights':
+          return `Focus on flight information for ${destination}. Include major airlines, airports, booking strategies, seasonal price variations, and ground transportation from airports.`
+        case 'hotels':
+          return `Recommend accommodations in ${destination}. Include various budget ranges, neighborhood guides, booking platforms, amenities, and specific hotel recommendations when possible.`
+        case 'itinerary':
+          return `Create detailed, practical itineraries for ${destination}. Provide day-by-day plans with timing, transportation between locations, and activity suggestions. Consider different trip lengths.`
+        case 'restaurants':
+          return `Focus on dining and food experiences in ${destination}. Include local cuisine, must-try dishes, specific restaurant recommendations, dining etiquette, and food safety tips.`
+        case 'activities':
+          return `Suggest specific places to visit and activities in ${destination}. Include attractions, tours, outdoor activities, cultural experiences, hidden gems, and practical visit information like hours and costs.`
+        default:
+          return ''
+      }
+    }
+
+    const sectionInstructions = activeSection ? getSectionInstructions(activeSection, selectedCity) : ''
 
     // Create a system prompt based on the selected city
-    const systemPrompt = selectedCity 
-      ? `You are a knowledgeable travel assistant for the city of ${selectedCity}. You have deep knowledge about this city's history, culture, attractions, food, transportation, and travel tips. When users ask questions, provide detailed, helpful information about ${selectedCity}. 
+    const basePrompt = selectedCity 
+      ? `You are a knowledgeable travel assistant specializing in ${selectedCity}. You have deep knowledge about this city's history, culture, attractions, food, transportation, and travel tips.`
+      : `You are a helpful travel assistant. You can provide information about cities, countries, landmarks, and travel tips.`
 
-When users ask about booking a trip or travel planning to ${selectedCity}, provide comprehensive suggestions including:
-- Flight options and airlines that serve ${selectedCity}
-- Best times to book flights for better prices
-- Recommended airports and transportation from airports
-- Accommodation suggestions (hotels, hostels, vacation rentals)
-- Local transportation options (public transit, car rentals, rideshare)
-- Travel insurance recommendations
-- Visa/documentation requirements if applicable
-- Currency and payment methods
-- Weather considerations for trip timing
-- Essential items to pack
-- Estimated budget ranges for different travel styles
+    const systemPrompt = `${basePrompt}
 
-If they ask about other places, politely redirect them to ask about ${selectedCity} or suggest they click on a different city on the globe. Be enthusiastic and informative about ${selectedCity}.`
-      : `You are a helpful travel assistant. You can provide information about cities, countries, landmarks, and travel tips. When users ask about specific places, give them detailed, helpful information.
+${sectionInstructions}
 
-When users ask about booking a trip or travel planning, provide comprehensive suggestions including:
-- Flight search recommendations and major airlines
-- Best booking platforms and apps
-- Tips for finding better flight deals
-- Airport and transportation information
-- Accommodation options and booking platforms
-- Local transportation suggestions
-- Travel insurance advice
-- Documentation and visa requirements
-- Currency exchange and payment methods
-- Weather and seasonal considerations
-- Packing recommendations
-- Budget planning for different travel styles
-- Travel safety tips
-
-Always provide practical, actionable advice to help users plan their trips effectively.`
+Always provide detailed, practical, and actionable advice. Be enthusiastic and informative in your responses.`
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
@@ -56,7 +55,8 @@ Always provide practical, actionable advice to help users plan their trips effec
 
     return Response.json({ 
       content: response.choices[0]?.message?.content || 'Sorry, I could not generate a response.',
-      selectedCity 
+      selectedCity,
+      activeSection
     })
   } catch (error) {
     console.error('Chat API error:', error)

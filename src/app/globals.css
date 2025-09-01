@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom CSS Variables for Glassmorphism Theme */
 :root {
   --glass-bg: rgba(255, 255, 255, 0.18);
