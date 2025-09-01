@@ -30,7 +30,17 @@ interface ChatBoxProps {
 }
 
 export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToCity }: ChatBoxProps) {
-  const [messages, setMessages] = useState<Message[]>([])
+  // Per-section messages to keep chats separated
+  const [sectionMessages, setSectionMessages] = useState<Record<string, Message[]>>({
+    'general': [],
+    'best-time': [],
+    'visa': [],
+    'flights': [],
+    'hotels': [],
+    'itinerary': [],
+    'restaurants': [],
+    'activities': []
+  })
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -71,7 +81,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages])
+  }, [sectionMessages, activeSection])
 
   // Function to detect and zoom to cities mentioned in messages
   const detectAndZoomToCity = (text: string) => {
@@ -152,6 +162,12 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
     }
   }
 
+  // Convenience getter/setter for current section messages
+  const getCurrentMessages = () => sectionMessages[activeSection] || []
+  const setCurrentMessages = (updater: (prev: Message[]) => Message[]) => {
+    setSectionMessages(prev => ({ ...prev, [activeSection]: updater(prev[activeSection] || []) }))
+  }
+
   // Update messages when selectedCity changes
   useEffect(() => {
     if (selectedCity) {
@@ -168,7 +184,8 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       setShowCityOptions(true)
     }
 
-    if (selectedCity && messages.length > 0) {
+    const current = getCurrentMessages()
+    if (selectedCity && current.length > 0) {
       let messageText = ''
       
       if (selectedCity.includes('not supported')) {
@@ -183,15 +200,19 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         sender: 'bot',
         timestamp: new Date()
       }
-      setMessages(prev => [...prev, cityMessage])
+      setCurrentMessages(prev => [...prev, cityMessage])
     }
   }, [selectedCity])
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return
+  const handleSendMessage = async (overrideText?: string, sectionIdOverride?: string) => {
+    const textToSend = (overrideText ?? inputValue).trim()
+    if (!textToSend) return
 
     // Start chat if this is the first message
-    if (messages.length === 0) {
+    const sectionIdToUse = sectionIdOverride || activeSection
+    const currentMessages = sectionMessages[sectionIdToUse] || []
+
+    if (currentMessages.length === 0) {
       onChatStart()
     }
 
@@ -205,25 +226,28 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: inputValue,
+      text: textToSend,
       sender: 'user',
       timestamp: new Date()
     }
 
-    setMessages(prev => [...prev, userMessage])
+    setSectionMessages(prev => ({
+      ...prev,
+      [sectionIdToUse]: [...(prev[sectionIdToUse] || []), userMessage]
+    }))
     setInputValue('')
     setIsTyping(true)
 
     try {
       // Prepare messages for API
-      const apiMessages = messages.map(msg => ({
+      const apiMessages = (sectionMessages[sectionIdToUse] || []).map(msg => ({
         role: msg.sender === 'user' ? 'user' : 'assistant',
         content: msg.text
       }))
 
       // Add section context if not general
-      if (activeSection !== 'general') {
-        const sectionContext = getSectionContext(activeSection, selectedCity)
+      if (sectionIdToUse !== 'general') {
+        const sectionContext = getSectionContext(sectionIdToUse, selectedCity)
         if (sectionContext) {
           apiMessages.push({
             role: 'system',
@@ -235,7 +259,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
       // Add current user message
       apiMessages.push({
         role: 'user',
-        content: inputValue
+        content: textToSend
       })
 
       const response = await fetch('/api/chat', {
@@ -246,7 +270,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         body: JSON.stringify({
           messages: apiMessages,
           selectedCity,
-          activeSection
+          activeSection: sectionIdToUse
         }),
       })
 
@@ -258,7 +282,10 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
           sender: 'bot',
           timestamp: new Date()
         }
-        setMessages(prev => [...prev, botMessage])
+        setSectionMessages(prev => ({
+          ...prev,
+          [sectionIdToUse]: [...(prev[sectionIdToUse] || []), botMessage]
+        }))
         
         // Detect and zoom to cities mentioned in the bot's response
         detectAndZoomToCity(data.content)
@@ -273,7 +300,10 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
         sender: 'bot',
         timestamp: new Date()
       }
-      setMessages(prev => [...prev, errorMessage])
+      setSectionMessages(prev => ({
+        ...prev,
+        [sectionIdToUse]: [...(prev[sectionIdToUse] || []), errorMessage]
+      }))
     } finally {
       setIsTyping(false)
     }
@@ -357,7 +387,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
               }}
             />
             <button
-              onClick={handleSendMessage}
+              onClick={() => handleSendMessage()}
               disabled={!inputValue.trim()}
               style={{
                 opacity: inputValue.trim() ? 1 : 0,
@@ -545,7 +575,27 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
               return (
                 <button
                   key={section.id}
-                  onClick={() => setActiveSection(section.id)}
+                  onClick={() => {
+                    setActiveSection(section.id)
+                    if (section.id !== 'general') {
+                      const cityShort = (selectedCity || '').split(',')[0] || ''
+                      const existing = sectionMessages[section.id] || []
+                      if (cityShort && existing.length === 0) {
+                        const autoPromptMap: Record<string, string> = {
+                          'best-time': `Best time to visit ${cityShort}`,
+                          'visa': `Visa requirements for visiting ${cityShort}`,
+                          'flights': `Flight options to ${cityShort}`,
+                          'hotels': `Best hotels in ${cityShort}`,
+                          'itinerary': `Create a 3-day itinerary for ${cityShort}`,
+                          'restaurants': `Best restaurants in ${cityShort}`,
+                          'activities': `Top places to visit and activities in ${cityShort}`,
+                        }
+                        const prompt = autoPromptMap[section.id] || `${section.label} in ${cityShort}`
+                        setShowSearchSections(true)
+                        setTimeout(() => handleSendMessage(prompt, section.id), 0)
+                      }
+                    }
+                  }}
                   style={{
                     padding: '12px 20px',
                     border: 'none',
@@ -646,7 +696,7 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
           </div>
         )}
 
-        {messages.map((message, index) => (
+        {(sectionMessages[activeSection] || []).map((message, index) => (
           <div
             key={message.id}
             className={`fade-in`}
@@ -713,7 +763,11 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={selectedCity ? `Ask about ${selectedCity}...` : "Type your message..."}
+            placeholder={
+              activeSection === 'general'
+                ? (selectedCity ? `Ask about ${selectedCity}...` : 'Type your message...')
+                : `${searchSections.find(s => s.id === activeSection)?.label} ${selectedCity ? `in ${selectedCity}` : ''}...`
+            }
             style={{ 
               flex: 1,
               padding: '12px 16px',
@@ -735,11 +789,11 @@ export default function ChatBox({ isActive, onChatStart, selectedCity, onZoomToC
           />
           
           <button
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim()}
+            onClick={() => handleSendMessage()}
+            disabled={activeSection !== 'general' ? false : !inputValue.trim()}
             style={{
-              opacity: inputValue.trim() ? 1 : 0.5,
-              cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
+              opacity: (activeSection !== 'general' ? 1 : (inputValue.trim() ? 1 : 0.5)),
+              cursor: (activeSection !== 'general' ? 'pointer' : (inputValue.trim() ? 'pointer' : 'not-allowed')),
               fontSize: '0.875rem',
               padding: '12px 16px',
               background: inputValue.trim() ? '#3b82f6' : '#9ca3af',
